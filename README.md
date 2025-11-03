@@ -25,4 +25,7 @@ AmjapOS is a custom, lightweight operating system designed for learning, experim
 ```bash
 git clone https://github.com/battletupaz-tech/MyOS.git
 cd MyOS
+make kernel.o
+make loader.o
+make make mykernel.bin
 qemu-system-x86_64 -kernel mykernel.bin
