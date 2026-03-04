@@ -52,7 +52,6 @@ void intToStr(int num, char* str) {
 
 extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber)
 {
-    system("cls");
     int num = 123 * 1;
     char str[20];  // Ensure enough space to hold the string
     intToStr(num, str);  // Convert integer to string
