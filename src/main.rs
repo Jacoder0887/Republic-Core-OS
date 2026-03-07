@@ -23,7 +23,7 @@ pub unsafe extern "C" fn memset(s: *mut u8, c: i32, n: usize) -> *mut u8 {
 #[no_mangle]
 pub extern "C" fn kernel_main() -> ! {
     let mut terminal_writer = TerminalWriter::new();
-    terminal_writer.write(b"Yow!");
+    terminal_writer.write(b"Yowgg!");
     loop {}
 }
 
