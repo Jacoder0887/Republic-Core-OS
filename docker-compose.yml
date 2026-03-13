@@ -1,0 +1,13 @@
+services:
+  compiler:
+    build: .
+    network_mode: "host"
+    container_name: gcc-cross-compiler
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      - .:/env
+    # Keep the container alive for commands
+    tty: true
+    stdin_open: true

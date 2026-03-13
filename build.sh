@@ -10,6 +10,6 @@ cp target/target/debug/kernel isodir/boot/myos.bin
 cp grub.cfg isodir/boot/grub/grub.cfg
 grub-mkrescue -o myos.iso isodir
 
-qemu-system-i386 -cdrom myos.iso -monitor stdio -d cpu_reset -no-reboot
+
 
 #Ctrl+Alt+G to qemu interact key
