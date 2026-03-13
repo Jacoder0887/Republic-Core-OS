@@ -1,6 +1,6 @@
 #![feature(global_asm)]
 #![allow(bad_asm_style, clippy::missing_safety_doc)]
-#![feature(offset_of)] 
+//#![feature(offset_of)] 
 #![no_std] // don't link the Rust standard library
 #![no_main] // disable all Rust-level entry points
 
@@ -72,6 +72,7 @@ pub unsafe extern "C" fn memset(s: *mut u8, c: i32, n: usize) -> *mut u8 {
 pub unsafe extern "C" fn kernel_main(_multiboot_magic: u32, info: *const MultibootInfo) -> i32 {
     let mut terminal_writer = TerminalWriter::new(); 
      unsafe {
+        terminal_writer.write(b"!:-D\n");
         for i in 0..(*info).mmap_length {
             let p = ((*info).mmap_addr + core::mem::size_of::<MultibootMmapEntry>() as u32 * i)
                 as *const MultibootMmapEntry;
@@ -80,6 +81,8 @@ pub unsafe extern "C" fn kernel_main(_multiboot_magic: u32, info: *const Multibo
             terminal_writer.write(b" addr: ");
             terminal_writer.put_u32((*p).addr as u32);
             terminal_writer.write(b"\n");
+            terminal_writer.rmchar();
+             terminal_writer.put_u32(terminal_writer.terminal_column as u32);
         }
     }
     0
@@ -131,6 +134,7 @@ struct TerminalWriter {
 }
 
 impl TerminalWriter {
+    //adding background
     fn new() -> TerminalWriter {
         let terminal_row = 0;
         let terminal_column = 0;
@@ -193,7 +197,7 @@ impl TerminalWriter {
         unsafe {
             *self.terminal_buffer.add(index) = vga_entry(c, color);
         }
-    }
+    } 
 
     fn putchar(&mut self, mut c: u8) { 
         if(c == b'\n')
@@ -216,6 +220,25 @@ impl TerminalWriter {
                 self.terminal_row = 0;
             }
         }
+    }
+
+
+    fn rmchar(&mut self) {
+        // 1. Move the cursor back
+        if self.terminal_column > 0 {
+            self.terminal_column -= 1;
+        } else if self.terminal_row == 5 {
+            self.terminal_row -= 1;
+            self.terminal_column = VGA_WIDTH - 1;
+        } else {
+            return; // Already at (0,0), nowhere to go back to
+        }
+
+        // 2. Clear the character at the NEW position
+        let color = self.terminal_color;
+        let x = self.terminal_column;
+        let y = self.terminal_row;
+        self.putentryat(b' ',color, x, y);
     }
 
     fn write(&mut self, data: &[u8]) {
